@@ -1,4 +1,4 @@
-import java.util.List;
+import java.util.*;
 
 // Los in deze klasse alle foutmeldingen op door (abstracte) klassen met variabelen en methodes te maken en een interface met methodes (en soms een import).
 public class PokemonGymImpl implements PokemonGym {
@@ -248,17 +248,52 @@ public class PokemonGymImpl implements PokemonGym {
         Scanner speler_A = new Scanner(System.in);
 
         System.out.println("Do you want to attack or change your pokemon?");
-        System.out.println("Type a for attack or c for change");
+        System.out.println("Type a for attack, f for food or c for change");
         String choice = speler_A.nextLine();
 
         if (choice.equalsIgnoreCase("a")) {
             String attack = chooseAttackPlayer(pokemon);
             performAttackPlayer(pokemon, gymPokemon, attack);
-        } else {
+        } else if(choice.equalsIgnoreCase("f")) {
+            String food = pokemonMenu(trainer);
+            pokemonEat(pokemon, food);
+        }else {
             pokemon = choosePokemon(trainer);
             attackOrChange(pokemon, gymPokemon, trainer, gym);
             fightRound(trainer, gym, pokemon, gymPokemon);
         }
     }
+    @Override
+    public String pokemonMenu(PokemonTrainer trainer) {
+            List<String> food = new ArrayList<>();
+            Scanner n = new Scanner(System.in);
+            for (Pokemon p : trainer.getPokemons()) {
+                for (int i = 0; i < trainer.getPokemons().size(); i++){
+                    if(!food.contains(p.getFood())){
+                        food.add(p.getFood());
+                    }
+                }
+            }
+        System.out.println("Please choose food for your pokemon:");
+        for (String f : food) {
+            System.out.println(f);
+        }
+        String foodChoice = n.nextLine();
 
+            return foodChoice;
+    }
+
+    @Override
+    public void pokemonEat(Pokemon pokemon, String food) {
+       int boost = 100;
+        if(pokemon.getFood().equalsIgnoreCase(food)) {
+           int oldHp = pokemon.getHp();
+           pokemon.setHp(oldHp + boost);
+           System.out.println(pokemon.getName() + " eat " + food + " :)");
+           System.out.println(pokemon.getName() + " new hp is " + Main.ANSI_GREEN + pokemon.getHp() + Main.ANSI_RESET + "!");
+       } else {
+           System.out.println(Main.ANSI_RED + pokemon.getName() + " dont eat " + food + "..." + Main.ANSI_RESET);
+       }
+
+    }
 }
